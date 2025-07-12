@@ -33,6 +33,13 @@
       border: 1px solid #ccc;
     }
 
+    .weekend-panel {
+      max-width: 100%;
+      height: auto;
+      border: 1px solid #ccc;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
     .fallback {
       margin-top: 1em;
       color: red;
@@ -45,11 +52,9 @@
       cursor: pointer;
     }
 
-    /* Calendar Day Styling */
     .flatpickr-day.weekend {
       background-color: #f0f0f0;
       color: #aaa;
-      cursor: not-allowed;
       position: relative;
     }
 
@@ -141,33 +146,35 @@
       year: "numeric"
     });
 
-function loadComic(date) {
-  const ymd = formatDate(date);
-  const match = knownFiles.find(file => file.includes(ymd));
-  const isWeekend = (date.getDay() === 0 || date.getDay() === 6); // Sunday or Saturday
+    function loadComic(date) {
+      const ymd = formatDate(date);
+      const match = knownFiles.find(file => file.includes(ymd));
+      const isWeekend = (date.getDay() === 0 || date.getDay() === 6); // Sunday or Saturday
 
-  if (match) {
-    const episodeNumber = match.match(/episode(\d+)-/)[1];
-    comicImg.src = `images/${match}`;
-    comicImg.alt = `Comic for ${ymd}`;
-    displayDate.textContent = formatDisplay(date);
-    episodeLabel.textContent = `Episode ${episodeNumber} – ${formatDisplay(date)}`;
-    fallback.textContent = "";
-  } else if (isWeekend) {
-    comicImg.src = "images/grady-weekend.png";
-    comicImg.alt = "Grady relaxing at home";
-    displayDate.textContent = formatDisplay(date);
-    episodeLabel.textContent = `No episode for ${formatDisplay(date)}`;
-    fallback.innerHTML = `<em style="color:red;">We don’t patch on the weekends — go enjoy your family time. ☕</em>`;
-  } else {
-    comicImg.src = "";
-    comicImg.alt = "";
-    displayDate.textContent = formatDisplay(date);
-    episodeLabel.textContent = `No episode for ${formatDisplay(date)}`;
-    fallback.textContent = "No comic available for this date.";
-  }
-}
-
+      if (match) {
+        const episodeNumber = match.match(/episode(\d+)-/)[1];
+        comicImg.src = `images/${match}`;
+        comicImg.alt = `Comic for ${ymd}`;
+        comicImg.className = "comic-image"; // Apply comic class
+        displayDate.textContent = formatDisplay(date);
+        episodeLabel.textContent = `Episode ${episodeNumber} – ${formatDisplay(date)}`;
+        fallback.textContent = "";
+      } else if (isWeekend) {
+        comicImg.src = "images/grady-weekend.png";
+        comicImg.alt = "Grady relaxing at home";
+        comicImg.className = "weekend-panel"; // Apply weekend class
+        displayDate.textContent = formatDisplay(date);
+        episodeLabel.textContent = `No episode for ${formatDisplay(date)}`;
+        fallback.innerHTML = `<em style="color:red;">We don’t patch on the weekends — go enjoy your family time. ☕</em>`;
+      } else {
+        comicImg.src = "";
+        comicImg.alt = "";
+        comicImg.className = "";
+        displayDate.textContent = formatDisplay(date);
+        episodeLabel.textContent = `No episode for ${formatDisplay(date)}`;
+        fallback.textContent = "No comic available for this date.";
+      }
+    }
 
     document.getElementById("prev-day").onclick = () => {
       currentDate.setDate(currentDate.getDate() - 1);
@@ -215,3 +222,4 @@ function loadComic(date) {
   </script>
 </body>
 </html>
+
