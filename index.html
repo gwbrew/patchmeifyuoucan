@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,6 +63,8 @@
 
     <div id="calendar-container"></div>
 
+    <h2 id="episode-label">Latest Episode</h2>
+
     <div class="latest">
       <img id="comic" class="comic-image" src="" alt="Comic of the day" />
       <div id="fallback" class="fallback"></div>
@@ -76,7 +77,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script>
-    // Dark Mode Toggle
     const toggle = document.getElementById('darkToggle');
     const storedTheme = localStorage.getItem('theme');
     if (storedTheme === 'dark') {
@@ -90,39 +90,52 @@
       toggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
     };
 
-    // Comic Logic
     const comicImg = document.getElementById("comic");
     const fallback = document.getElementById("fallback");
     const displayDate = document.getElementById("display-date");
     const calendarBox = document.getElementById("calendar-container");
+    const episodeLabel = document.getElementById("episode-label");
 
     let currentDate = new Date();
 
-    const formatDate = (date) => {
-      return date.toISOString().split("T")[0]; // YYYY-MM-DD
-    };
+    const knownFiles = [
+      "episode15-2025-07-11.jpg",
+      "episode14-2025-07-10.jpg",
+      "episode13-2025-07-09.jpg",
+      "episode12-2025-07-08.jpg",
+      "episode11-2025-07-07.jpg",
+      "episode10-2025-07-04.jpg",
+      "episode09-2025-07-03.jpg",
+      "episode08-2025-07-02.jpg",
+      "episode07-2025-07-01.jpg",
+      "episode06-2025-06-30.jpg"
+    ];
 
-    const formatDisplay = (date) => {
-      return date.toLocaleDateString("en-US", {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-        year: "numeric"
-      });
-    };
+    const formatDate = (date) => date.toISOString().split("T")[0];
+    const formatDisplay = (date) => date.toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric"
+    });
 
     function loadComic(date) {
       const ymd = formatDate(date);
-      const path = `images/episode-${ymd}.jpg`;
-      comicImg.src = path;
-      comicImg.alt = `Comic for ${ymd}`;
-      displayDate.textContent = formatDisplay(date);
-      fallback.textContent = "";
+      const match = knownFiles.find(file => file.includes(ymd));
 
-      comicImg.onerror = () => {
+      if (match) {
+        const episodeNumber = match.match(/episode(\d+)-/)[1];
+        comicImg.src = `images/${match}`;
+        comicImg.alt = `Comic for ${ymd}`;
+        displayDate.textContent = formatDisplay(date);
+        episodeLabel.textContent = `Episode ${episodeNumber} – ${formatDisplay(date)}`;
+        fallback.textContent = "";
+      } else {
         comicImg.src = "";
+        displayDate.textContent = formatDisplay(date);
+        episodeLabel.textContent = `No episode for ${formatDisplay(date)}`;
         fallback.textContent = "No comic available for this date.";
-      };
+      }
     }
 
     document.getElementById("prev-day").onclick = () => {
@@ -149,7 +162,6 @@
       }
     });
 
-    // Initial load
     loadComic(currentDate);
   </script>
 </body>
