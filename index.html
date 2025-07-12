@@ -152,15 +152,16 @@
       calendarBox.style.display = calendarBox.style.display === "block" ? "none" : "block";
     };
 
-    flatpickr(calendarBox, {
-      defaultDate: currentDate,
-      inline: true,
-      onChange: function (selectedDates) {
-        currentDate = selectedDates[0];
-        loadComic(currentDate);
-        calendarBox.style.display = "none";
-      }
-    });
+  flatpickr(document.createElement("input"), {
+  defaultDate: currentDate,
+  inline: true,
+  appendTo: calendarBox,
+  onChange: function (selectedDates) {
+    currentDate = selectedDates[0];
+    loadComic(currentDate);
+    calendarBox.style.display = "none";
+  }
+});
 
     loadComic(currentDate);
   </script>
