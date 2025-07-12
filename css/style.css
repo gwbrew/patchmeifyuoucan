@@ -101,3 +101,53 @@ footer {
     text-align: center;
     font-size: 0.9rem;
 }
+
+:root {
+  --bg: #fdfdfd;
+  --fg: #222;
+  --link: #268bd2;
+  --accent: #002b36;
+  --footer: #eee;
+  --panel: #ffffff;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+}
+
+header, footer {
+  background: var(--accent);
+  color: var(--panel);
+}
+
+nav a {
+  color: var(--link);
+}
+
+footer {
+  background: var(--footer);
+}
+
+/* Dark Mode Toggle Style */
+#darkToggle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: var(--footer);
+  border: none;
+  padding: 0.5em 1em;
+  cursor: pointer;
+  font-size: 0.9em;
+  border-radius: 4px;
+}
+
+/* Dark mode overrides */
+body.dark {
+  --bg: #121212;
+  --fg: #f5f5f5;
+  --link: #80bfff;
+  --accent: #1a1a1a;
+  --footer: #333;
+  --panel: #222;
+}
