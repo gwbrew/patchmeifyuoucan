@@ -6,74 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
-  <style>
-    .comic-nav {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 1em;
-      margin-bottom: 1em;
-    }
-
-    #calendar-container {
-      display: none;
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      background: white;
-      border: 1px solid #ccc;
-      padding: 1em;
-      z-index: 999;
-    }
-
-    .comic-image {
-      max-width: 100%;
-      height: auto;
-      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-      border: 1px solid #ccc;
-    }
-
-    .weekend-panel {
-      width: 100%;
-      max-width: 960px;
-      height: auto;
-      border: 1px solid #ccc;
-      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-      margin-top: 1rem;
-    }
-
-    .fallback {
-      margin-top: 1em;
-      color: red;
-      font-style: italic;
-    }
-
-    button {
-      padding: 0.5em 1em;
-      font-size: 1em;
-      cursor: pointer;
-    }
-
-    .flatpickr-day.weekend {
-      background-color: #f0f0f0;
-      color: #aaa;
-      position: relative;
-    }
-
-    .flatpickr-day.weekend::after {
-      content: "🏡";
-      position: absolute;
-      top: 2px;
-      right: 2px;
-      font-size: 0.75em;
-    }
-
-    .flatpickr-day.comic-day {
-      background-color: #c2f0c2 !important;
-      border: 1px solid #4caf50;
-      font-weight: bold;
-    }
-  </style>
 </head>
 <body>
   <button id="darkToggle">🌙 Dark Mode</button>
@@ -98,6 +30,52 @@
       <img id="comic" class="comic-image" src="" alt="Comic of the day" />
       <div id="fallback" class="fallback"></div>
     </div>
+
+    <!-- Comment Section -->
+    <section class="comment-section">
+      <div class="comment-header">
+        <h3>Conversation <span id="comment-count">(0 Comments)</span></h3>
+        <span class="viewing-count">👀 2 Viewing</span>
+      </div>
+      <p class="comment-policy">
+        Let’s keep this space respectful and fun—please abide by 
+        <a href="#">our comment policy</a>.
+        <button class="login-button">Log in</button>
+      </p>
+      <div class="comment-box">
+        <textarea placeholder="What do you think?"></textarea>
+        <div class="comment-actions">
+          <button>GIF</button>
+          <button>😊</button>
+          <button class="submit-comment">Post</button>
+        </div>
+      </div>
+      <div class="sort-bar">
+        <label>Sort by 
+          <select>
+            <option>Newest</option>
+            <option>Oldest</option>
+            <option>Most Liked</option>
+          </select>
+        </label>
+      </div>
+      <ul class="comment-list">
+        <li class="comment">
+          <div class="avatar"><img src="https://via.placeholder.com/40" alt="user" /></div>
+          <div class="content">
+            <div class="meta">
+              <strong>rgcviper</strong> <span>2 days ago</span>
+            </div>
+            <p>Can’t argue against that one. <em>Mmm--bacon</em>...</p>
+            <div class="actions">
+              <button>Reply</button>
+              <button>👍 1</button>
+              <button>🔗 Share</button>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </section>
   </main>
 
   <footer>
@@ -112,7 +90,6 @@
       document.body.classList.add('dark');
       toggle.textContent = '☀️ Light Mode';
     }
-
     toggle.onclick = () => {
       const isDark = document.body.classList.toggle('dark');
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
@@ -126,7 +103,6 @@
     const episodeLabel = document.getElementById("episode-label");
 
     let currentDate = new Date();
-
     const knownFiles = [
       "episode15-2025-07-11.jpg",
       "episode14-2025-07-10.jpg",
@@ -141,17 +117,12 @@
     ];
 
     const formatDate = (date) => date.toISOString().split("T")[0];
-    const formatDisplay = (date) => date.toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-      year: "numeric"
-    });
+    const formatDisplay = (date) => date.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
 
     function loadComic(date) {
       const ymd = formatDate(date);
       const match = knownFiles.find(file => file.includes(ymd));
-      const isWeekend = (date.getDay() === 0 || date.getDay() === 6); // Sunday or Saturday
+      const isWeekend = (date.getDay() === 0 || date.getDay() === 6);
 
       if (match) {
         const episodeNumber = match.match(/episode(\d+)-/)[1];
@@ -182,12 +153,10 @@
       currentDate.setDate(currentDate.getDate() - 1);
       loadComic(currentDate);
     };
-
     document.getElementById("next-day").onclick = () => {
       currentDate.setDate(currentDate.getDate() + 1);
       loadComic(currentDate);
     };
-
     document.getElementById("date-toggle").onclick = () => {
       calendarBox.style.display = calendarBox.style.display === "block" ? "none" : "block";
     };
@@ -206,12 +175,10 @@
         const date = dayElem.dateObj;
         const ymd = formatDate(date);
         const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-
         if (isWeekend) {
           dayElem.classList.add("weekend");
           dayElem.title = "No comic – family time 🙌";
         }
-
         const match = knownFiles.find(file => file.includes(ymd));
         if (match) {
           dayElem.classList.add("comic-day");
