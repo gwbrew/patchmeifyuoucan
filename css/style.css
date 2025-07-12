@@ -84,3 +84,20 @@ footer {
         align-items: center;
     }
 }
+
+/* Mobile and general responsive enhancements */
+header img {
+    width: 100%;
+    max-height: 220px;
+    object-fit: contain;
+}
+
+main h2 {
+    margin-bottom: 1rem;
+}
+
+footer {
+    padding: 1rem 0;
+    text-align: center;
+    font-size: 0.9rem;
+}
