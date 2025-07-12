@@ -141,7 +141,7 @@
       year: "numeric"
     });
 
-    function loadComic(date) {
+function loadComic(date) {
   const ymd = formatDate(date);
   const match = knownFiles.find(file => file.includes(ymd));
   const isWeekend = (date.getDay() === 0 || date.getDay() === 6); // Sunday or Saturday
@@ -154,12 +154,14 @@
     episodeLabel.textContent = `Episode ${episodeNumber} – ${formatDisplay(date)}`;
     fallback.textContent = "";
   } else if (isWeekend) {
-    comicImg.src = "";
+    comicImg.src = "images/grady-weekend.png";
+    comicImg.alt = "Grady relaxing at home";
     displayDate.textContent = formatDisplay(date);
     episodeLabel.textContent = `No episode for ${formatDisplay(date)}`;
-    fallback.textContent = "We don’t patch on the weekends — go enjoy your family time. ☕";
+    fallback.innerHTML = `<em style="color:red;">We don’t patch on the weekends — go enjoy your family time. ☕</em>`;
   } else {
     comicImg.src = "";
+    comicImg.alt = "";
     displayDate.textContent = formatDisplay(date);
     episodeLabel.textContent = `No episode for ${formatDisplay(date)}`;
     fallback.textContent = "No comic available for this date.";
