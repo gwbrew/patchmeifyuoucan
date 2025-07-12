@@ -137,7 +137,6 @@ body.dark {
 .flatpickr-day.weekend {
   background-color: #f0f0f0;
   color: #aaa;
-  cursor: not-allowed;
   position: relative;
 }
 
@@ -193,6 +192,7 @@ img.weekend-panel {
   display: flex;
   align-items: center;
   margin-bottom: 1rem;
+  gap: 0.5em;
 }
 
 .comment-input input {
@@ -201,13 +201,6 @@ img.weekend-panel {
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-}
-
-.comment-tools {
-  margin-left: 0.5em;
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
 }
 
 .comment-tools button {
