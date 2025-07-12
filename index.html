@@ -1,194 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Patch Me If YUOU Can</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
-</head>
-<body>
-  <button id="darkToggle">🌙 Dark Mode</button>
+<script>
+  let comments = [];
 
-  <header>
-    <img src="images/logo-header.png" alt="Patch Me If YUOU Can" style="max-width: 100%; height: auto;" />
-    <p class="tagline">For everyone who's ever rebooted a server, survived an audit, or debugged a "simple" API call.</p>
-  </header>
+  const commentInput = document.querySelector(".comment-box textarea");
+  const postButton = document.querySelector(".submit-comment");
+  const commentList = document.querySelector(".comment-list");
+  const commentSort = document.querySelector(".sort-bar select");
+  const commentCount = document.getElementById("comment-count");
 
-  <main>
-    <div class="comic-nav">
-      <button id="prev-day">←</button>
-      <button id="date-toggle"><span id="display-date">Loading…</span> ▼</button>
-      <button id="next-day">→</button>
-    </div>
+  function renderComments() {
+    commentList.innerHTML = "";
+    const sorted = [...comments];
+    if (commentSort.value === "Oldest") sorted.reverse();
+    if (commentSort.value === "Most Liked") sorted.sort((a,b) => b.likes - a.likes);
 
-    <div id="calendar-container"></div>
-
-    <h2 id="episode-label">Latest Episode</h2>
-
-    <div class="latest">
-      <img id="comic" class="comic-image" src="" alt="Comic of the day" />
-      <div id="fallback" class="fallback"></div>
-    </div>
-
-    <!-- Comment Section -->
-    <section class="comment-section">
-      <div class="comment-header">
-        <h3>Conversation <span id="comment-count">(0 Comments)</span></h3>
-        <span class="viewing-count">👀 2 Viewing</span>
-      </div>
-      <p class="comment-policy">
-        Let’s keep this space respectful and fun—please abide by 
-        <a href="#">our comment policy</a>.
-        <button class="login-button">Log in</button>
-      </p>
-      <div class="comment-box">
-        <textarea placeholder="What do you think?"></textarea>
-        <div class="comment-actions">
-          <button>GIF</button>
-          <button>😊</button>
-          <button class="submit-comment">Post</button>
-        </div>
-      </div>
-      <div class="sort-bar">
-        <label>Sort by 
-          <select>
-            <option>Newest</option>
-            <option>Oldest</option>
-            <option>Most Liked</option>
-          </select>
-        </label>
-      </div>
-      <ul class="comment-list">
-        <li class="comment">
-          <div class="avatar"><img src="https://via.placeholder.com/40" alt="user" /></div>
-          <div class="content">
-            <div class="meta">
-              <strong>rgcviper</strong> <span>2 days ago</span>
-            </div>
-            <p>Can’t argue against that one. <em>Mmm--bacon</em>...</p>
-            <div class="actions">
-              <button>Reply</button>
-              <button>👍 1</button>
-              <button>🔗 Share</button>
-            </div>
+    sorted.forEach((comment, idx) => {
+      const li = document.createElement("li");
+      li.className = "comment";
+      li.innerHTML = `
+        <div class="avatar"><img src="https://via.placeholder.com/40" alt="user" /></div>
+        <div class="content">
+          <div class="meta">
+            <strong>${comment.name}</strong> <span>${comment.time}</span>
           </div>
-        </li>
-      </ul>
-    </section>
-  </main>
-
-  <footer>
-    <p>© 2025 Patch Me If YUOU Can</p>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script>
-    const toggle = document.getElementById('darkToggle');
-    const storedTheme = localStorage.getItem('theme');
-    if (storedTheme === 'dark') {
-      document.body.classList.add('dark');
-      toggle.textContent = '☀️ Light Mode';
-    }
-    toggle.onclick = () => {
-      const isDark = document.body.classList.toggle('dark');
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-      toggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
-    };
-
-    const comicImg = document.getElementById("comic");
-    const fallback = document.getElementById("fallback");
-    const displayDate = document.getElementById("display-date");
-    const calendarBox = document.getElementById("calendar-container");
-    const episodeLabel = document.getElementById("episode-label");
-
-    let currentDate = new Date();
-    const knownFiles = [
-      "episode15-2025-07-11.jpg",
-      "episode14-2025-07-10.jpg",
-      "episode13-2025-07-09.jpg",
-      "episode12-2025-07-08.jpg",
-      "episode11-2025-07-07.jpg",
-      "episode10-2025-07-04.jpg",
-      "episode09-2025-07-03.jpg",
-      "episode08-2025-07-02.jpg",
-      "episode07-2025-07-01.jpg",
-      "episode06-2025-06-30.jpg"
-    ];
-
-    const formatDate = (date) => date.toISOString().split("T")[0];
-    const formatDisplay = (date) => date.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-
-    function loadComic(date) {
-      const ymd = formatDate(date);
-      const match = knownFiles.find(file => file.includes(ymd));
-      const isWeekend = (date.getDay() === 0 || date.getDay() === 6);
-
-      if (match) {
-        const episodeNumber = match.match(/episode(\d+)-/)[1];
-        comicImg.src = `images/${match}`;
-        comicImg.alt = `Comic for ${ymd}`;
-        comicImg.className = "comic-image";
-        displayDate.textContent = formatDisplay(date);
-        episodeLabel.textContent = `Episode ${episodeNumber} – ${formatDisplay(date)}`;
-        fallback.textContent = "";
-      } else if (isWeekend) {
-        comicImg.src = "images/grady-weekend.png";
-        comicImg.alt = "Grady relaxing at home";
-        comicImg.className = "weekend-panel";
-        displayDate.textContent = formatDisplay(date);
-        episodeLabel.textContent = `No episode for ${formatDisplay(date)}`;
-        fallback.innerHTML = `<em style="color:red;">We don’t patch on the weekends — go enjoy your family time. ☕</em>`;
-      } else {
-        comicImg.src = "";
-        comicImg.alt = "";
-        comicImg.className = "";
-        displayDate.textContent = formatDisplay(date);
-        episodeLabel.textContent = `No episode for ${formatDisplay(date)}`;
-        fallback.textContent = "No comic available for this date.";
-      }
-    }
-
-    document.getElementById("prev-day").onclick = () => {
-      currentDate.setDate(currentDate.getDate() - 1);
-      loadComic(currentDate);
-    };
-    document.getElementById("next-day").onclick = () => {
-      currentDate.setDate(currentDate.getDate() + 1);
-      loadComic(currentDate);
-    };
-    document.getElementById("date-toggle").onclick = () => {
-      calendarBox.style.display = calendarBox.style.display === "block" ? "none" : "block";
-    };
-
-    flatpickr(document.createElement("input"), {
-      defaultDate: currentDate,
-      inline: true,
-      appendTo: calendarBox,
-      disableMobile: true,
-      onChange: function (selectedDates) {
-        currentDate = selectedDates[0];
-        loadComic(currentDate);
-        calendarBox.style.display = "none";
-      },
-      onDayCreate: function (dObj, dStr, fp, dayElem) {
-        const date = dayElem.dateObj;
-        const ymd = formatDate(date);
-        const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-        if (isWeekend) {
-          dayElem.classList.add("weekend");
-          dayElem.title = "No comic – family time 🙌";
-        }
-        const match = knownFiles.find(file => file.includes(ymd));
-        if (match) {
-          dayElem.classList.add("comic-day");
-          dayElem.title = "New comic available!";
-        }
-      }
+          <p>${comment.text}</p>
+          <div class="actions">
+            <button onclick="likeComment(${idx})">👍 ${comment.likes}</button>
+            <button onclick="replyComment(${idx})">Reply</button>
+            <button onclick="shareComment(${idx})">🔗 Share</button>
+          </div>
+        </div>
+      `;
+      commentList.appendChild(li);
     });
+    commentCount.textContent = `(${comments.length} Comment${comments.length !== 1 ? 's' : ''})`;
+  }
 
-    loadComic(currentDate);
-  </script>
-</body>
-</html>
+  postButton.addEventListener("click", () => {
+    const text = commentInput.value.trim();
+    if (!text) return;
+    comments.unshift({
+      name: "User",
+      text,
+      likes: 0,
+      time: new Date().toLocaleDateString()
+    });
+    commentInput.value = "";
+    renderComments();
+  });
 
+  function likeComment(index) {
+    comments[index].likes++;
+    renderComments();
+  }
+
+  function replyComment(index) {
+    alert(`Replying to: ${comments[index].text}`);
+  }
+
+  function shareComment(index) {
+    navigator.clipboard.writeText(`Shared comment: ${comments[index].text}`);
+    alert("Comment copied to clipboard");
+  }
+
+  commentSort.addEventListener("change", renderComments);
+  renderComments();
+</script>
