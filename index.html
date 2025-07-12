@@ -152,7 +152,7 @@
       calendarBox.style.display = calendarBox.style.display === "block" ? "none" : "block";
     };
 
-    flatpickr("#calendar-container", {
+    flatpickr(calendarBox, {
       defaultDate: currentDate,
       inline: true,
       onChange: function (selectedDates) {
@@ -166,3 +166,4 @@
   </script>
 </body>
 </html>
+
