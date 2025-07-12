@@ -142,23 +142,30 @@
     });
 
     function loadComic(date) {
-      const ymd = formatDate(date);
-      const match = knownFiles.find(file => file.includes(ymd));
+  const ymd = formatDate(date);
+  const match = knownFiles.find(file => file.includes(ymd));
+  const isWeekend = (date.getDay() === 0 || date.getDay() === 6); // Sunday or Saturday
 
-      if (match) {
-        const episodeNumber = match.match(/episode(\d+)-/)[1];
-        comicImg.src = `images/${match}`;
-        comicImg.alt = `Comic for ${ymd}`;
-        displayDate.textContent = formatDisplay(date);
-        episodeLabel.textContent = `Episode ${episodeNumber} – ${formatDisplay(date)}`;
-        fallback.textContent = "";
-      } else {
-        comicImg.src = "";
-        displayDate.textContent = formatDisplay(date);
-        episodeLabel.textContent = `No episode for ${formatDisplay(date)}`;
-        fallback.textContent = "No comic available for this date.";
-      }
-    }
+  if (match) {
+    const episodeNumber = match.match(/episode(\d+)-/)[1];
+    comicImg.src = `images/${match}`;
+    comicImg.alt = `Comic for ${ymd}`;
+    displayDate.textContent = formatDisplay(date);
+    episodeLabel.textContent = `Episode ${episodeNumber} – ${formatDisplay(date)}`;
+    fallback.textContent = "";
+  } else if (isWeekend) {
+    comicImg.src = "";
+    displayDate.textContent = formatDisplay(date);
+    episodeLabel.textContent = `No episode for ${formatDisplay(date)}`;
+    fallback.textContent = "We don’t patch on the weekends — go enjoy your family time. ☕";
+  } else {
+    comicImg.src = "";
+    displayDate.textContent = formatDisplay(date);
+    episodeLabel.textContent = `No episode for ${formatDisplay(date)}`;
+    fallback.textContent = "No comic available for this date.";
+  }
+}
+
 
     document.getElementById("prev-day").onclick = () => {
       currentDate.setDate(currentDate.getDate() - 1);
