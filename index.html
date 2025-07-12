@@ -1,43 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Patch Me If YUOU Can</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <title>Patch Me If YUOU Can</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+  <style>
+    .comic-nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1em;
+      margin-bottom: 1em;
+    }
+
+    #calendar-container {
+      display: none;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      border: 1px solid #ccc;
+      padding: 1em;
+      z-index: 999;
+    }
+
+    .comic-image {
+      max-width: 100%;
+      height: auto;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+      border: 1px solid #ccc;
+    }
+
+    .fallback {
+      margin-top: 1em;
+      color: red;
+      font-style: italic;
+    }
+
+    button {
+      padding: 0.5em 1em;
+      font-size: 1em;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <button id="darkToggle">🌙 Dark Mode</button>
+  <button id="darkToggle">🌙 Dark Mode</button>
 
-    <header>
-        <img src="images/logo-header.png" alt="Patch Me If YUOU Can" style="max-width: 100%; height: auto;" />
-        <p class="tagline">For everyone who's ever rebooted a server, survived an audit, or debugged a "simple" API call.</p>
-    </header>
+  <header>
+    <img src="images/logo-header.png" alt="Patch Me If YUOU Can" style="max-width: 100%; height: auto;" />
+    <p class="tagline">For everyone who's ever rebooted a server, survived an audit, or debugged a "simple" API call.</p>
+  </header>
 
-    <main>
-        <h2>Latest Episode</h2>
-        <div class="latest">
-            <img src="images/episode-23.jpg" alt="Volatile Memory – Episode 23" />
-        </div>
-    </main>
+  <main>
+    <div class="comic-nav">
+      <button id="prev-day">←</button>
+      <button id="date-toggle"><span id="display-date">Loading…</span> ▼</button>
+      <button id="next-day">→</button>
+    </div>
 
-    <footer>
-        <p>© 2025 Patch Me If YUOU Can</p>
-    </footer>
+    <div id="calendar-container"></div>
 
-    <script>
-        const toggle = document.getElementById('darkToggle');
-        const storedTheme = localStorage.getItem('theme');
+    <div class="latest">
+      <img id="comic" class="comic-image" src="" alt="Comic of the day" />
+      <div id="fallback" class="fallback"></div>
+    </div>
+  </main>
 
-        if (storedTheme === 'dark') {
-            document.body.classList.add('dark');
-            toggle.textContent = '☀️ Light Mode';
-        }
+  <footer>
+    <p>© 2025 Patch Me If YUOU Can</p>
+  </footer>
 
-        toggle.onclick = () => {
-            const isDark = document.body.classList.toggle('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            toggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
-        };
-    </script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    // Dark Mode Toggle
+    const toggle = document.getElementById('darkToggle');
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme === 'dark') {
+      document.body.classList.add('dark');
+      toggle.textContent = '☀️ Light Mode';
+    }
+
+    toggle.onclick = () => {
+      const isDark = document.body.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      toggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+    };
+
+    // Comic Logic
+    const comicImg = document.getElementById("comic");
+    const fallback = document.getElementById("fallback");
+    const displayDate = document.getElementById("display-date");
+    const calendarBox = document.getElementById("calendar-container");
+
+    let currentDate = new Date();
+
+    const formatDate = (date) => {
+      return date.toISOString().split("T")[0]; // YYYY-MM-DD
+    };
+
+    const formatDisplay = (date) => {
+      return date.toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+      });
+    };
+
+    function loadComic(date) {
+      const ymd = formatDate(date);
+      const path = `images/episode-${ymd}.jpg`;
+      comicImg.src = path;
+      comicImg.alt = `Comic for ${ymd}`;
+      displayDate.textContent = formatDisplay(date);
+      fallback.textContent = "";
+
+      comicImg.onerror = () => {
+        comicImg.src = "";
+        fallback.textContent = "No comic available for this date.";
+      };
+    }
+
+    document.getElementById("prev-day").onclick = () => {
+      currentDate.setDate(currentDate.getDate() - 1);
+      loadComic(currentDate);
+    };
+
+    document.getElementById("next-day").onclick = () => {
+      currentDate.setDate(currentDate.getDate() + 1);
+      loadComic(currentDate);
+    };
+
+    document.getElementById("date-toggle").onclick = () => {
+      calendarBox.style.display = calendarBox.style.display === "block" ? "none" : "block";
+    };
+
+    flatpickr("#calendar-container", {
+      defaultDate: currentDate,
+      inline: true,
+      onChange: function (selectedDates) {
+        currentDate = selectedDates[0];
+        loadComic(currentDate);
+        calendarBox.style.display = "none";
+      }
+    });
+
+    // Initial load
+    loadComic(currentDate);
+  </script>
 </body>
 </html>
