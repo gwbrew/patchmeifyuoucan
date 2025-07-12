@@ -44,6 +44,28 @@
       font-size: 1em;
       cursor: pointer;
     }
+
+    /* Calendar Day Styling */
+    .flatpickr-day.weekend {
+      background-color: #f0f0f0;
+      color: #aaa;
+      cursor: not-allowed;
+      position: relative;
+    }
+
+    .flatpickr-day.weekend::after {
+      content: "🏡";
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      font-size: 0.75em;
+    }
+
+    .flatpickr-day.comic-day {
+      background-color: #c2f0c2 !important;
+      border: 1px solid #4caf50;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -152,19 +174,35 @@
       calendarBox.style.display = calendarBox.style.display === "block" ? "none" : "block";
     };
 
-  flatpickr(document.createElement("input"), {
-  defaultDate: currentDate,
-  inline: true,
-  appendTo: calendarBox,
-  onChange: function (selectedDates) {
-    currentDate = selectedDates[0];
-    loadComic(currentDate);
-    calendarBox.style.display = "none";
-  }
-});
+    flatpickr(document.createElement("input"), {
+      defaultDate: currentDate,
+      inline: true,
+      appendTo: calendarBox,
+      disableMobile: true,
+      onChange: function (selectedDates) {
+        currentDate = selectedDates[0];
+        loadComic(currentDate);
+        calendarBox.style.display = "none";
+      },
+      onDayCreate: function (dObj, dStr, fp, dayElem) {
+        const date = dayElem.dateObj;
+        const ymd = formatDate(date);
+        const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+
+        if (isWeekend) {
+          dayElem.classList.add("weekend");
+          dayElem.title = "No comic – family time 🙌";
+        }
+
+        const match = knownFiles.find(file => file.includes(ymd));
+        if (match) {
+          dayElem.classList.add("comic-day");
+          dayElem.title = "New comic available!";
+        }
+      }
+    });
 
     loadComic(currentDate);
   </script>
 </body>
 </html>
-
