@@ -25,33 +25,6 @@ header, footer {
 header img {
   width: 100%;
   max-height: 220px;
-  objec:root {
-  --bg: #fdfdfd;
-  --fg: #222;
-  --link: #268bd2;
-  --accent: #002b36;
-  --footer: #eee;
-  --panel: #ffffff;
-}
-
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: var(--bg);
-  color: var(--fg);
-  margin: 0;
-  padding: 0;
-}
-
-header, footer {
-  background: var(--accent);
-  color: var(--panel);
-  text-align: center;
-  padding: 1em;
-}
-
-header img {
-  width: 100%;
-  max-height: 220px;
   object-fit: contain;
 }
 
@@ -181,3 +154,4 @@ body.dark {
   border: 1px solid #4caf50;
   font-weight: bold;
 }
+
