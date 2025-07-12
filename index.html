@@ -1,67 +1,69 @@
 <script>
-  let comments = [];
+  document.addEventListener("DOMContentLoaded", () => {
+    let comments = [];
 
-  const commentInput = document.querySelector(".comment-box textarea");
-  const postButton = document.querySelector(".submit-comment");
-  const commentList = document.querySelector(".comment-list");
-  const commentSort = document.querySelector(".sort-bar select");
-  const commentCount = document.getElementById("comment-count");
+    const commentInput = document.querySelector(".comment-box textarea");
+    const postButton = document.querySelector(".submit-comment");
+    const commentList = document.querySelector(".comment-list");
+    const commentSort = document.querySelector(".sort-bar select");
+    const commentCount = document.getElementById("comment-count");
 
-  function renderComments() {
-    commentList.innerHTML = "";
-    const sorted = [...comments];
-    if (commentSort.value === "Oldest") sorted.reverse();
-    if (commentSort.value === "Most Liked") sorted.sort((a,b) => b.likes - a.likes);
+    function renderComments() {
+      commentList.innerHTML = "";
+      const sorted = [...comments];
+      if (commentSort.value === "Oldest") sorted.reverse();
+      if (commentSort.value === "Most Liked") sorted.sort((a,b) => b.likes - a.likes);
 
-    sorted.forEach((comment, idx) => {
-      const li = document.createElement("li");
-      li.className = "comment";
-      li.innerHTML = `
-        <div class="avatar"><img src="https://via.placeholder.com/40" alt="user" /></div>
-        <div class="content">
-          <div class="meta">
-            <strong>${comment.name}</strong> <span>${comment.time}</span>
+      sorted.forEach((comment, idx) => {
+        const li = document.createElement("li");
+        li.className = "comment";
+        li.innerHTML = `
+          <div class="avatar"><img src="https://via.placeholder.com/40" alt="user" /></div>
+          <div class="content">
+            <div class="meta">
+              <strong>${comment.name}</strong> <span>${comment.time}</span>
+            </div>
+            <p>${comment.text}</p>
+            <div class="actions">
+              <button onclick="likeComment(${idx})">👍 ${comment.likes}</button>
+              <button onclick="replyComment(${idx})">Reply</button>
+              <button onclick="shareComment(${idx})">🔗 Share</button>
+            </div>
           </div>
-          <p>${comment.text}</p>
-          <div class="actions">
-            <button onclick="likeComment(${idx})">👍 ${comment.likes}</button>
-            <button onclick="replyComment(${idx})">Reply</button>
-            <button onclick="shareComment(${idx})">🔗 Share</button>
-          </div>
-        </div>
-      `;
-      commentList.appendChild(li);
-    });
-    commentCount.textContent = `(${comments.length} Comment${comments.length !== 1 ? 's' : ''})`;
-  }
+        `;
+        commentList.appendChild(li);
+      });
+      commentCount.textContent = `(${comments.length} Comment${comments.length !== 1 ? 's' : ''})`;
+    }
 
-  postButton.addEventListener("click", () => {
-    const text = commentInput.value.trim();
-    if (!text) return;
-    comments.unshift({
-      name: "User",
-      text,
-      likes: 0,
-      time: new Date().toLocaleDateString()
+    postButton.addEventListener("click", () => {
+      const text = commentInput.value.trim();
+      if (!text) return;
+      comments.unshift({
+        name: "User",
+        text,
+        likes: 0,
+        time: new Date().toLocaleDateString()
+      });
+      commentInput.value = "";
+      renderComments();
     });
-    commentInput.value = "";
+
+    window.likeComment = function(index) {
+      comments[index].likes++;
+      renderComments();
+    };
+
+    window.replyComment = function(index) {
+      alert(`Replying to: ${comments[index].text}`);
+    };
+
+    window.shareComment = function(index) {
+      navigator.clipboard.writeText(`Shared comment: ${comments[index].text}`);
+      alert("Comment copied to clipboard");
+    };
+
+    commentSort.addEventListener("change", renderComments);
     renderComments();
   });
-
-  function likeComment(index) {
-    comments[index].likes++;
-    renderComments();
-  }
-
-  function replyComment(index) {
-    alert(`Replying to: ${comments[index].text}`);
-  }
-
-  function shareComment(index) {
-    navigator.clipboard.writeText(`Shared comment: ${comments[index].text}`);
-    alert("Comment copied to clipboard");
-  }
-
-  commentSort.addEventListener("change", renderComments);
-  renderComments();
 </script>
