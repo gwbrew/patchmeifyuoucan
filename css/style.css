@@ -215,6 +215,8 @@ img.weekend-panel {
   border: 1px solid #ccc;
   cursor: pointer;
   font-size: 0.9rem;
+  padding: 0.3em 0.6em;
+  border-radius: 3px;
 }
 
 .comment-sort {
