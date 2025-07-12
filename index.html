@@ -44,7 +44,7 @@
         <button id="logout-btn" style="display:none;">Sign out</button>
       </p>
       <div class="comment-box">
-        <textarea placeholder="What do you think?"></textarea>
+        <textarea id="comment-text" placeholder="What do you think?"></textarea>
         <div class="comment-actions">
           <button>GIF</button>
           <button>😊</button>
@@ -91,6 +91,7 @@
     document.addEventListener("DOMContentLoaded", () => {
       const loginBtn = document.getElementById("login-btn");
       const logoutBtn = document.getElementById("logout-btn");
+      const commentBox = document.querySelector(".comment-box");
 
       loginBtn.addEventListener("click", () => {
         signInWithPopup(auth, provider)
@@ -113,9 +114,11 @@
         if (user) {
           loginBtn.style.display = "none";
           logoutBtn.style.display = "inline-block";
+          commentBox.style.display = "block";
         } else {
           loginBtn.style.display = "inline-block";
           logoutBtn.style.display = "none";
+          commentBox.style.display = "none";
         }
       });
     });
@@ -124,7 +127,7 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // future logic will go here (comment + comic)
+      // placeholder for comic and comment logic
     });
   </script>
 </body>
