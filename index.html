@@ -1,69 +1,140 @@
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    let comments = [];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Patch Me If YUOU Can</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+</head>
+<body>
+  <button id="darkToggle">🌙 Dark Mode</button>
 
-    const commentInput = document.querySelector(".comment-box textarea");
-    const postButton = document.querySelector(".submit-comment");
-    const commentList = document.querySelector(".comment-list");
-    const commentSort = document.querySelector(".sort-bar select");
-    const commentCount = document.getElementById("comment-count");
+  <header>
+    <img src="images/logo-header.png" alt="Patch Me If YUOU Can" style="max-width: 100%; height: auto;" />
+    <p class="tagline">For everyone who's ever rebooted a server, survived an audit, or debugged a "simple" API call.</p>
+  </header>
 
-    function renderComments() {
-      commentList.innerHTML = "";
-      const sorted = [...comments];
-      if (commentSort.value === "Oldest") sorted.reverse();
-      if (commentSort.value === "Most Liked") sorted.sort((a,b) => b.likes - a.likes);
+  <main>
+    <div class="comic-nav">
+      <button id="prev-day">←</button>
+      <button id="date-toggle"><span id="display-date">Loading…</span> ▼</button>
+      <button id="next-day">→</button>
+    </div>
 
-      sorted.forEach((comment, idx) => {
-        const li = document.createElement("li");
-        li.className = "comment";
-        li.innerHTML = `
-          <div class="avatar"><img src="https://via.placeholder.com/40" alt="user" /></div>
-          <div class="content">
-            <div class="meta">
-              <strong>${comment.name}</strong> <span>${comment.time}</span>
+    <div id="calendar-container"></div>
+
+    <h2 id="episode-label">Latest Episode</h2>
+
+    <div class="latest">
+      <img id="comic" class="comic-image" src="" alt="Comic of the day" />
+      <div id="fallback" class="fallback"></div>
+    </div>
+
+    <!-- Comment Section -->
+    <section class="comment-section">
+      <div class="comment-header">
+        <h3>Conversation <span id="comment-count">(0 Comments)</span></h3>
+        <span class="viewing-count">👀 2 Viewing</span>
+      </div>
+      <p class="comment-policy">
+        Let’s keep this space respectful and fun—please abide by 
+        <a href="#">our comment policy</a>.
+        <button class="login-button">Log in</button>
+      </p>
+      <div class="comment-box">
+        <textarea placeholder="What do you think?"></textarea>
+        <div class="comment-actions">
+          <button>GIF</button>
+          <button>😊</button>
+          <button class="submit-comment">Post</button>
+        </div>
+      </div>
+      <div class="sort-bar">
+        <label>Sort by 
+          <select>
+            <option>Newest</option>
+            <option>Oldest</option>
+            <option>Most Liked</option>
+          </select>
+        </label>
+      </div>
+      <ul class="comment-list"></ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Patch Me If YUOU Can</p>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      let comments = [];
+
+      const commentInput = document.querySelector(".comment-box textarea");
+      const postButton = document.querySelector(".submit-comment");
+      const commentList = document.querySelector(".comment-list");
+      const commentSort = document.querySelector(".sort-bar select");
+      const commentCount = document.getElementById("comment-count");
+
+      function renderComments() {
+        commentList.innerHTML = "";
+        const sorted = [...comments];
+        if (commentSort.value === "Oldest") sorted.reverse();
+        if (commentSort.value === "Most Liked") sorted.sort((a,b) => b.likes - a.likes);
+
+        sorted.forEach((comment, idx) => {
+          const li = document.createElement("li");
+          li.className = "comment";
+          li.innerHTML = `
+            <div class="avatar"><img src="https://via.placeholder.com/40" alt="user" /></div>
+            <div class="content">
+              <div class="meta">
+                <strong>${comment.name}</strong> <span>${comment.time}</span>
+              </div>
+              <p>${comment.text}</p>
+              <div class="actions">
+                <button onclick="likeComment(${idx})">👍 ${comment.likes}</button>
+                <button onclick="replyComment(${idx})">Reply</button>
+                <button onclick="shareComment(${idx})">🔗 Share</button>
+              </div>
             </div>
-            <p>${comment.text}</p>
-            <div class="actions">
-              <button onclick="likeComment(${idx})">👍 ${comment.likes}</button>
-              <button onclick="replyComment(${idx})">Reply</button>
-              <button onclick="shareComment(${idx})">🔗 Share</button>
-            </div>
-          </div>
-        `;
-        commentList.appendChild(li);
-      });
-      commentCount.textContent = `(${comments.length} Comment${comments.length !== 1 ? 's' : ''})`;
-    }
+          `;
+          commentList.appendChild(li);
+        });
+        commentCount.textContent = `(${comments.length} Comment${comments.length !== 1 ? 's' : ''})`;
+      }
 
-    postButton.addEventListener("click", () => {
-      const text = commentInput.value.trim();
-      if (!text) return;
-      comments.unshift({
-        name: "User",
-        text,
-        likes: 0,
-        time: new Date().toLocaleDateString()
+      postButton.addEventListener("click", () => {
+        const text = commentInput.value.trim();
+        if (!text) return;
+        comments.unshift({
+          name: "User",
+          text,
+          likes: 0,
+          time: new Date().toLocaleDateString()
+        });
+        commentInput.value = "";
+        renderComments();
       });
-      commentInput.value = "";
+
+      window.likeComment = function(index) {
+        comments[index].likes++;
+        renderComments();
+      };
+
+      window.replyComment = function(index) {
+        alert(`Replying to: ${comments[index].text}`);
+      };
+
+      window.shareComment = function(index) {
+        navigator.clipboard.writeText(`Shared comment: ${comments[index].text}`);
+        alert("Comment copied to clipboard");
+      };
+
+      commentSort.addEventListener("change", renderComments);
       renderComments();
     });
-
-    window.likeComment = function(index) {
-      comments[index].likes++;
-      renderComments();
-    };
-
-    window.replyComment = function(index) {
-      alert(`Replying to: ${comments[index].text}`);
-    };
-
-    window.shareComment = function(index) {
-      navigator.clipboard.writeText(`Shared comment: ${comments[index].text}`);
-      alert("Comment copied to clipboard");
-    };
-
-    commentSort.addEventListener("change", renderComments);
-    renderComments();
-  });
-</script>
+  </script>
+</body>
+</html>
