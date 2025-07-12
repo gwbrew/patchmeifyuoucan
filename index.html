@@ -67,10 +67,11 @@
     <p>© 2025 Patch Me If YUOU Can</p>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
+      // Comment logic
       let comments = [];
-
       const commentInput = document.querySelector(".comment-box textarea");
       const postButton = document.querySelector(".submit-comment");
       const commentList = document.querySelector(".comment-list");
@@ -82,7 +83,6 @@
         const sorted = [...comments];
         if (commentSort.value === "Oldest") sorted.reverse();
         if (commentSort.value === "Most Liked") sorted.sort((a,b) => b.likes - a.likes);
-
         sorted.forEach((comment, idx) => {
           const li = document.createElement("li");
           li.className = "comment";
@@ -108,12 +108,7 @@
       postButton.addEventListener("click", () => {
         const text = commentInput.value.trim();
         if (!text) return;
-        comments.unshift({
-          name: "User",
-          text,
-          likes: 0,
-          time: new Date().toLocaleDateString()
-        });
+        comments.unshift({ name: "User", text, likes: 0, time: new Date().toLocaleDateString() });
         commentInput.value = "";
         renderComments();
       });
@@ -122,11 +117,9 @@
         comments[index].likes++;
         renderComments();
       };
-
       window.replyComment = function(index) {
         alert(`Replying to: ${comments[index].text}`);
       };
-
       window.shareComment = function(index) {
         navigator.clipboard.writeText(`Shared comment: ${comments[index].text}`);
         alert("Comment copied to clipboard");
@@ -134,7 +127,102 @@
 
       commentSort.addEventListener("change", renderComments);
       renderComments();
+
+      // Comic logic
+      const comicImg = document.getElementById("comic");
+      const fallback = document.getElementById("fallback");
+      const displayDate = document.getElementById("display-date");
+      const calendarBox = document.getElementById("calendar-container");
+      const episodeLabel = document.getElementById("episode-label");
+
+      let currentDate = new Date();
+      const knownFiles = [
+        "episode15-2025-07-11.jpg",
+        "episode14-2025-07-10.jpg",
+        "episode13-2025-07-09.jpg",
+        "episode12-2025-07-08.jpg",
+        "episode11-2025-07-07.jpg",
+        "episode10-2025-07-04.jpg",
+        "episode09-2025-07-03.jpg",
+        "episode08-2025-07-02.jpg",
+        "episode07-2025-07-01.jpg",
+        "episode06-2025-06-30.jpg"
+      ];
+
+      const formatDate = (date) => date.toISOString().split("T")[0];
+      const formatDisplay = (date) => date.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+
+      function loadComic(date) {
+        const ymd = formatDate(date);
+        const match = knownFiles.find(file => file.includes(ymd));
+        const isWeekend = (date.getDay() === 0 || date.getDay() === 6);
+        if (match) {
+          const episodeNumber = match.match(/episode(\d+)-/)[1];
+          comicImg.src = `images/${match}`;
+          comicImg.alt = `Comic for ${ymd}`;
+          comicImg.className = "comic-image";
+          displayDate.textContent = formatDisplay(date);
+          episodeLabel.textContent = `Episode ${episodeNumber} – ${formatDisplay(date)}`;
+          fallback.textContent = "";
+        } else if (isWeekend) {
+          comicImg.src = "images/grady-weekend.png";
+          comicImg.alt = "Grady relaxing at home";
+          comicImg.className = "weekend-panel";
+          displayDate.textContent = formatDisplay(date);
+          episodeLabel.textContent = `No episode for ${formatDisplay(date)}`;
+          fallback.innerHTML = `<em style="color:red;">We don’t patch on the weekends — go enjoy your family time. ☕</em>`;
+        } else {
+          comicImg.src = "";
+          comicImg.alt = "";
+          comicImg.className = "";
+          displayDate.textContent = formatDisplay(date);
+          episodeLabel.textContent = `No episode for ${formatDisplay(date)}`;
+          fallback.textContent = "No comic available for this date.";
+        }
+      }
+
+      document.getElementById("prev-day").onclick = () => {
+        currentDate.setDate(currentDate.getDate() - 1);
+        loadComic(currentDate);
+      };
+
+      document.getElementById("next-day").onclick = () => {
+        currentDate.setDate(currentDate.getDate() + 1);
+        loadComic(currentDate);
+      };
+
+      document.getElementById("date-toggle").onclick = () => {
+        calendarBox.style.display = calendarBox.style.display === "block" ? "none" : "block";
+      };
+
+      flatpickr(document.createElement("input"), {
+        defaultDate: currentDate,
+        inline: true,
+        appendTo: calendarBox,
+        disableMobile: true,
+        onChange: function (selectedDates) {
+          currentDate = selectedDates[0];
+          loadComic(currentDate);
+          calendarBox.style.display = "none";
+        },
+        onDayCreate: function (dObj, dStr, fp, dayElem) {
+          const date = dayElem.dateObj;
+          const ymd = formatDate(date);
+          const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+          if (isWeekend) {
+            dayElem.classList.add("weekend");
+            dayElem.title = "No comic – family time 🙌";
+          }
+          if (knownFiles.some(file => file.includes(ymd))) {
+            dayElem.classList.add("comic-day");
+            dayElem.title = "New comic available!";
+          }
+        }
+      });
+
+      loadComic(currentDate);
     });
   </script>
 </body>
 </html>
+
