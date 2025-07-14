@@ -96,7 +96,7 @@ const firebaseConfig = {
       const commentBox = document.querySelector(".comment-box");
 
       loginBtn.addEventListener("click", () => {
-        signInWithPopup(auth, provider)
+        signInWithRedirect(auth, provider)
           .then((result) => {
             const user = result.user;
             console.log("Signed in as:", user.displayName);
