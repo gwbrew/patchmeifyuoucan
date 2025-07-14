@@ -68,21 +68,15 @@
     <p>© 2025 Patch Me If YUOU Can</p>
   </footer>
 
+  <!-- ✅ Firebase Configuration -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
-    import {
-      getAuth,
-      GoogleAuthProvider,
-      signInWithRedirect,
-      getRedirectResult,
-      signOut,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCdVpc2NGJDss49dhyQmfS1Lx4c0ylPrdM",
-      authDomain: "patchmeifyuoucan.com",
+      authDomain: "patchmeifyuoucanfirebase.firebaseapp.com",
       projectId: "patchmeifyuoucanfirebase",
       storageBucket: "patchmeifyuoucanfirebase.appspot.com",
       messagingSenderId: "655608612377",
@@ -95,26 +89,20 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    // Process redirect result (after coming back from Google login)
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result && result.user) {
-          console.log("Redirect login complete:", result.user.displayName);
-        }
-      })
-      .catch((error) => {
-        if (error.code !== "auth/no-auth-event") {
-          console.error("Redirect login error:", error);
-        }
-      });
-
     document.addEventListener("DOMContentLoaded", () => {
       const loginBtn = document.getElementById("login-btn");
       const logoutBtn = document.getElementById("logout-btn");
       const commentBox = document.querySelector(".comment-box");
 
       loginBtn.addEventListener("click", () => {
-        signInWithRedirect(auth, provider); // this will redirect
+        signInWithPopup(auth, provider)
+          .then((result) => {
+            const user = result.user;
+            console.log("Signed in as:", user.displayName);
+          })
+          .catch((error) => {
+            console.error("Login error:", error.message);
+          });
       });
 
       logoutBtn.addEventListener("click", () => {
@@ -137,6 +125,7 @@
     });
   </script>
 
+  <!-- Optional Tools -->
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
