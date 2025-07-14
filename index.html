@@ -75,14 +75,14 @@
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyCdVpc2NGJDss49dhyQmfS1Lx4c0ylPrdM",
-      authDomain: "patchmeifyuoucanfirebase.firebaseapp.com",
-      projectId: "patchmeifyuoucanfirebase",
-      storageBucket: "patchmeifyuoucanfirebase.appspot.com",
-      messagingSenderId: "655608612377",
-      appId: "1:655608612377:web:7906f63b552365eab2cc88",
-      measurementId: "G-SN8NXQR5TH"
-    };
+  apiKey: "AIzaSyCdVpc2NGJDss49dhyQmfS1Lx4c0ylPrdM",
+  authDomain: "patchmeifyuoucanfirebase.firebaseapp.com",  // ✅ Not your public domain here
+  projectId: "patchmeifyuoucanfirebase",
+  storageBucket: "patchmeifyuoucanfirebase.appspot.com",
+  messagingSenderId: "655608612377",
+  appId: "1:655608612377:web:7906f63b552365eab2cc88",
+  measurementId: "G-SN8NXQR5TH"
+};
 
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
