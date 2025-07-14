@@ -71,24 +71,42 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithRedirect,
+      getRedirectResult,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCdVpc2NGJDss49dhyQmfS1Lx4c0ylPrdM",
-  authDomain: "patchmeifyuoucan.com",
-  projectId: "patchmeifyuoucanfirebase",
-  storageBucket: "patchmeifyuoucanfirebase.appspot.com",
-  messagingSenderId: "655608612377",
-  appId: "1:655608612377:web:7906f63b552365eab2cc88",
-  measurementId: "G-SN8NXQR5TH"
-};
-
-
+    const firebaseConfig = {
+      apiKey: "AIzaSyCdVpc2NGJDss49dhyQmfS1Lx4c0ylPrdM",
+      authDomain: "patchmeifyuoucan.com",
+      projectId: "patchmeifyuoucanfirebase",
+      storageBucket: "patchmeifyuoucanfirebase.appspot.com",
+      messagingSenderId: "655608612377",
+      appId: "1:655608612377:web:7906f63b552365eab2cc88",
+      measurementId: "G-SN8NXQR5TH"
+    };
 
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
+
+    // Process redirect result (after coming back from Google login)
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result && result.user) {
+          console.log("Redirect login complete:", result.user.displayName);
+        }
+      })
+      .catch((error) => {
+        if (error.code !== "auth/no-auth-event") {
+          console.error("Redirect login error:", error);
+        }
+      });
 
     document.addEventListener("DOMContentLoaded", () => {
       const loginBtn = document.getElementById("login-btn");
@@ -96,14 +114,7 @@ const firebaseConfig = {
       const commentBox = document.querySelector(".comment-box");
 
       loginBtn.addEventListener("click", () => {
-        signInWithRedirect(auth, provider)
-          .then((result) => {
-            const user = result.user;
-            console.log("Signed in as:", user.displayName);
-          })
-          .catch((error) => {
-            console.error("Login error:", error);
-          });
+        signInWithRedirect(auth, provider); // this will redirect
       });
 
       logoutBtn.addEventListener("click", () => {
